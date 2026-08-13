@@ -9,7 +9,7 @@ stages:
 variables:
   DOCKER_HOST: "tcp://docker:2375"
   DOCKER_TLS_CERTDIR: ""
-  IMAGE_NAME: "$REGISTRY_DOMAIN/development/development/firmaec/firmadigital-servicio/firmadigital-servicio"
+  IMAGE_NAME: "$REGISTRY_DOMAIN/development/firmaec/firmadigital-servicio/firmadigital-servicio"
 
 
 build_and_push:
