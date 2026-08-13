@@ -25,6 +25,5 @@ build_and_push:
   script:
     - cp "$INTERNAL_CA_CERT" ./.container/build/main-domain.pem
     - export EXT_REPOSITORY_READ_TOKEN="$EXT_REPOSITORY_READ_TOKEN"
-    - SQL_SERVER_IMAGE_TAG=$(cat ./args/sql_server_image_tag.txt)
     - docker build --provenance=false --platform linux/amd64 --build-arg MAIN_DOMAIN_ARG=$MAIN_DOMAIN --secret id=ext-repository-read-token,env=EXT_REPOSITORY_READ_TOKEN -t "$IMAGE_NAME:$CI_COMMIT_TAG" .
     - docker push $IMAGE_NAME:$CI_COMMIT_TAG
