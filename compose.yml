@@ -1,0 +1,34 @@
+name: firmadigital-servicio
+
+services:
+  firmadigital-servicio:
+    build:
+      context: .
+      args:
+        MAIN_DOMAIN_ARG: ${MAIN_DOMAIN_ARG}
+      secrets:
+        - ext-repository-read-token
+    container_name: firmadigital-servicio
+    restart: unless-stopped
+    ports:
+      - "8080:8080"    # HTTP port
+      - "9990:9990"    # Management console port
+    env_file:
+      - .env
+    stdin_open: true
+    tty: true
+    volumes:
+      - sql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  sql_data:
+
+secrets:
+  ext-repository-read-token:
+    file: ./.container/build/ext-repository-read-token.cib-secret

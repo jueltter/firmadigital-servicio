@@ -1,0 +1,14 @@
+# Set default behavior to handle all files as text and normalize to LF
+* text=auto
+
+# Explicitly declare that shell scripts must always use LF
+*.sh text eol=lf
+
+# Ensure your SQL dumps or config files also use LF to avoid Postgres errors
+*.sql text eol=lf
+*.conf text eol=lf
+
+# Keep binary files as binary
+*.dump binary
+*.png binary
+*.jpg binary
