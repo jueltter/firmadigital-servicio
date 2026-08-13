@@ -15,10 +15,6 @@ services:
       - "9990:9990"    # Management console port
     env_file:
       - .env
-    stdin_open: true
-    tty: true
-    volumes:
-      - sql_data:/var/opt/mssql
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/"]
       interval: 30s
