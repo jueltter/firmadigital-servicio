@@ -1,6 +1,6 @@
 workflow:
   rules:
-    - if: '$CI_COMMIT_TAG =~ /^((\d{4}-(DEV|PROD))|latest)$/'
+    - if: '$CI_COMMIT_TAG =~ /^((\d+\.\d+\.\d+)|latest)$/'
     - when: never
 
 stages:
