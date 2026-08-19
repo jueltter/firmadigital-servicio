@@ -1,0 +1,6 @@
+# ~/.config/containers/systemd/firmadigital-network.network
+[Unit]
+Description=firmadigital network
+
+[Network]
+# handled by podman

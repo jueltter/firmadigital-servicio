@@ -5,6 +5,7 @@ workflow:
 
 stages:
   - build
+  - deploy
 
 variables:
   DOCKER_HOST: "tcp://docker:2375"
@@ -28,3 +29,61 @@ build_and_push:
     - export EXT_REPOSITORY_READ_TOKEN="$EXT_REPOSITORY_READ_TOKEN"
     - docker build --provenance=false --platform linux/amd64 --build-arg MAIN_DOMAIN_ARG=$MAIN_DOMAIN --secret id=ext-repository-read-token,env=EXT_REPOSITORY_READ_TOKEN -t "$IMAGE_NAME:$CI_COMMIT_TAG" .
     - docker push $IMAGE_NAME:$CI_COMMIT_TAG
+
+.ssh_deploy_template: &ssh_setup
+  image: alpine:3.19
+  tags:
+    - shared
+  before_script:
+    - set -euo pipefail
+    # Install SSH client
+    - apk add --no-cache openssh-client gettext util-linux
+    # Start SSH agent and load the private key variable securely
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    # Create the secure .ssh directory and disable strict host checking for automation
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+
+deploy_to_test:
+  stage: deploy
+  <<: *ssh_setup
+  environment:
+    name: test
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/'
+  script:
+    - set -euo pipefail
+    - RANDOM_ID=$(uuidgen)
+    # Export GitLab CI variables so envsubst can access them
+    - export IMAGE_NAME=$IMAGE_NAME
+    - export IMAGE_TAG=$CI_COMMIT_SHA
+
+    - export WILDFLY_USER=$WILDFLY_USER
+    - export WILDFLY_PASS=$WILDFLY_PASS
+    - export DB_USER=$DB_USER
+    - export DB_PASSWORD=$DB_PASSWORD
+    - export DB_CONNECTION_URL=$DB_CONNECTION_URL
+
+    # Now envsubst will replace ${VARIABLE} with exported values
+    - envsubst < .gitlab-ci/firmadigital-servicio.container.template > firmadigital-servicio.container.tmp
+    - envsubst < .gitlab-ci/firmadigital-servicio.env.template > firmadigital-servicio.env.tmp
+
+    # Copy substituted files to test server
+    - scp firmadigital-network.network.tmp sdlc-bot@10.14.0.16:/tmp/firmadigital-network-$RANDOM_ID.network
+    - scp firmadigital-servicio.container.tmp sdlc-bot@10.14.0.16:/tmp/firmadigital-servicio-$RANDOM_ID.container
+    - scp firmadigital-servicio.env.tmp sdlc-bot@10.14.0.16:/tmp/firmadigital-servicio-$RANDOM_ID.env
+    # Execute commands remotely on your Test server via SSH
+    - |
+      ssh sdlc-bot@10.14.0.16 "
+        systemctl --user disable firmadigital-servicio --now || true &&
+        mkdir -p ~/.config/containers/systemd/firmadigital-servicio || true &&
+        cp /tmp/firmadigital-network-$RANDOM_ID.network /home/sdlc-bot/.config/containers/systemd/firmadigital-network.network &&
+        cp /tmp/firmadigital-servicio-$RANDOM_ID.container /home/sdlc-bot/.config/containers/systemd/firmadigital-servicio.container &&
+        cp /tmp/firmadigital-servicio-$RANDOM_ID.env /home/sdlc-bot/.config/containers/systemd/firmadigital-servicio/.env &&
+        podman login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
+        podman pull $IMAGE_NAME:$CI_COMMIT_TAG &&
+        systemctl --user daemon-reload &&
+        systemctl --user enable firmadigital-servicio --now
+      "

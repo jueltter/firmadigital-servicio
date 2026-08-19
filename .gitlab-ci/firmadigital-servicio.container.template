@@ -1,0 +1,27 @@
+# ~/.config/containers/systemd/firmadigital-servicio.container
+
+[Unit]
+Description=firmadigital-servicio container
+After=network-online.target
+
+[Container]
+ContainerName=firmadigital-servicio
+Image=$IMAGE_NAME:$IMAGE_TAG
+PublishPort=8080:8080
+PublishPort=9990:9990
+EnvironmentFile=%h/.config/containers/systemd/firmadigital-servicio/.env
+Network=firmadigital-network.network
+
+
+# Healthcheck configuration
+HealthCmd="curl -f http://localhost:8080/"
+HealthInterval=30s
+HealthTimeout=10s
+HealthRetries=3
+HealthStartPeriod=40s
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
