@@ -101,6 +101,19 @@ RUN chown jboss:jboss /opt/jboss/setup-postgres-datasource.cli
 COPY container-src/main/resources/config/docker-entrypoint.sh /opt/jboss/tools/docker-entrypoint.sh
 RUN chmod +x /opt/jboss/tools/docker-entrypoint.sh && chown jboss:jboss /opt/jboss/tools/docker-entrypoint.sh
 
+# Copy the old organization certificate
+COPY .container/build/old-main-domain.pem /tmp/old-main-domain.pem
+
+# Import the organization certificate into the Java Truststore
+# $JAVA_HOME is usually set by the base WildFly image
+RUN keytool -importcert -trustcacerts \
+    -aliAS old-main-domain \
+    -file /tmp/old-main-domain.pem \
+    -keystore $JAVA_HOME/lib/security/cacerts \
+    -storepass changeit \
+    -noprompt \
+    && rm /tmp/old-main-domain.pem
+
 # Copy the organization certificate
 COPY .container/build/main-domain.pem /tmp/main-domain.pem
 

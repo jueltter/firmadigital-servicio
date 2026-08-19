@@ -24,6 +24,7 @@ build_and_push:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
   script:
     - cp "$INTERNAL_CA_CERT" ./.container/build/main-domain.pem
+    - cp "$OLD_INTERNAL_CA_CERT" ./.container/build/old-main-domain.pem
     - export EXT_REPOSITORY_READ_TOKEN="$EXT_REPOSITORY_READ_TOKEN"
     - docker build --provenance=false --platform linux/amd64 --build-arg MAIN_DOMAIN_ARG=$MAIN_DOMAIN --secret id=ext-repository-read-token,env=EXT_REPOSITORY_READ_TOKEN -t "$IMAGE_NAME:$CI_COMMIT_TAG" .
     - docker push $IMAGE_NAME:$CI_COMMIT_TAG
