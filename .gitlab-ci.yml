@@ -71,12 +71,12 @@ deploy_to_test:
     - envsubst < .gitlab-ci/firmadigital-servicio.env.template > firmadigital-servicio.env.tmp
 
     # Copy substituted files to test server
-    - scp firmadigital-network.network.tmp sdlc-bot@10.14.0.16:/tmp/firmadigital-network-$RANDOM_ID.network
-    - scp firmadigital-servicio.container.tmp sdlc-bot@10.14.0.16:/tmp/firmadigital-servicio-$RANDOM_ID.container
-    - scp firmadigital-servicio.env.tmp sdlc-bot@10.14.0.16:/tmp/firmadigital-servicio-$RANDOM_ID.env
+    - scp .gitlab-ci/firmadigital-network.network.template sdlc-bot@$CONTAINER_HOST:/tmp/firmadigital-network-$RANDOM_ID.network
+    - scp firmadigital-servicio.container.tmp sdlc-bot@$CONTAINER_HOST:/tmp/firmadigital-servicio-$RANDOM_ID.container
+    - scp firmadigital-servicio.env.tmp sdlc-bot@$CONTAINER_HOST:/tmp/firmadigital-servicio-$RANDOM_ID.env
     # Execute commands remotely on your Test server via SSH
     - |
-      ssh sdlc-bot@10.14.0.16 "
+      ssh sdlc-bot@$CONTAINER_HOST "
         systemctl --user disable firmadigital-servicio --now || true &&
         mkdir -p ~/.config/containers/systemd/firmadigital-servicio || true &&
         cp /tmp/firmadigital-network-$RANDOM_ID.network /home/sdlc-bot/.config/containers/systemd/firmadigital-network.network &&
