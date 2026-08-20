@@ -58,7 +58,7 @@ deploy_to_test:
     - RANDOM_ID=$(uuidgen)
     # Export GitLab CI variables so envsubst can access them
     - export IMAGE_NAME=$IMAGE_NAME
-    - export IMAGE_TAG=$CI_COMMIT_SHA
+    - export IMAGE_TAG=$CI_COMMIT_TAG
 
     - export WILDFLY_USER=$WILDFLY_USER
     - export WILDFLY_PASS=$WILDFLY_PASS
