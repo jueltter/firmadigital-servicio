@@ -85,5 +85,5 @@ deploy_to_test:
         podman login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
         podman pull $IMAGE_NAME:$CI_COMMIT_TAG &&
         systemctl --user daemon-reload &&
-        systemctl --user enable firmadigital-servicio --now
+        systemctl --user start firmadigital-servicio
       "
