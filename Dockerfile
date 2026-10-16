@@ -11,12 +11,12 @@ WORKDIR /app
 # Clone the library repository
 RUN --mount=type=secret,id=ext-repository-read-token \
     EXT_REPOSITORY_READ_TOKEN=$(cat /run/secrets/ext-repository-read-token) \
-    && git -c http.sslVerify=false clone --depth 1 https://oauth2:${EXT_REPOSITORY_READ_TOKEN}@${MAIN_DOMAIN_ARG}/development-ext/firmaec/firmadigital-libreria.git
+    && git -c http.sslVerify=false clone --branch 5.2.0-minka --single-branch --depth 1 https://oauth2:${EXT_REPOSITORY_READ_TOKEN}@${MAIN_DOMAIN_ARG}/development-ext/firmaec/firmadigital-libreria.git
 
 # Clone the repository
 RUN --mount=type=secret,id=ext-repository-read-token \
     EXT_REPOSITORY_READ_TOKEN=$(cat /run/secrets/ext-repository-read-token) \
-    && git -c http.sslVerify=false clone --depth 1 https://oauth2:${EXT_REPOSITORY_READ_TOKEN}@${MAIN_DOMAIN_ARG}/development-ext/firmaec/firmadigital-servicio.git
+    && git -c http.sslVerify=false clone --branch 5.2.0-minka --single-branch --depth 1 https://oauth2:${EXT_REPOSITORY_READ_TOKEN}@${MAIN_DOMAIN_ARG}/development-ext/firmaec/firmadigital-servicio.git
 
 ################################################################################
 
