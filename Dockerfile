@@ -90,19 +90,19 @@ RUN sh -c 'for f in /opt/jboss/wildfly/standalone/deployments/*.war; do touch "$
 RUN if [ -f /opt/jboss/tools/docker-entrypoint.sh ]; then mv /opt/jboss/tools/docker-entrypoint.sh /opt/jboss/tools/docker-entrypoint.sh.original; fi
 
 # Copy PostgreSQL JDBC driver
-COPY container-src/main/resources/libs/postgresql-42.2.2.jar /opt/jboss/
+COPY .gitlab-ci/container/postgresql-42.2.2.jar /opt/jboss/
 RUN chown jboss:jboss /opt/jboss/postgresql-42.2.2.jar
 
 # Copy CLI script for datasource configuration
-COPY container-src/main/resources/config/setup-postgres-datasource.cli /opt/jboss/
+COPY .gitlab-ci/container/setup-postgres-datasource.cli /opt/jboss/
 RUN chown jboss:jboss /opt/jboss/setup-postgres-datasource.cli
 
 # Copy wrapper entrypoint that can add a management user at container start
-COPY container-src/main/resources/config/docker-entrypoint.sh /opt/jboss/tools/docker-entrypoint.sh
+COPY .gitlab-ci/container/docker-entrypoint.sh /opt/jboss/tools/docker-entrypoint.sh
 RUN chmod +x /opt/jboss/tools/docker-entrypoint.sh && chown jboss:jboss /opt/jboss/tools/docker-entrypoint.sh
 
 # Copy the old organization certificate
-COPY .container/build/old-main-domain.pem /tmp/old-main-domain.pem
+COPY .gitlab-ci/variables/old-main-domain.pem /tmp/old-main-domain.pem
 
 # Import the organization certificate into the Java Truststore
 # $JAVA_HOME is usually set by the base WildFly image
@@ -115,7 +115,7 @@ RUN keytool -importcert -trustcacerts \
     && rm /tmp/old-main-domain.pem
 
 # Copy the organization certificate
-COPY .container/build/main-domain.pem /tmp/main-domain.pem
+COPY .gitlab-ci/variables/main-domain.pem /tmp/main-domain.pem
 
 # Import the organization certificate into the Java Truststore
 # $JAVA_HOME is usually set by the base WildFly image

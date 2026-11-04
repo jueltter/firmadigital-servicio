@@ -27,4 +27,4 @@ volumes:
 
 secrets:
   ext-repository-read-token:
-    file: ./.container/build/ext-repository-read-token.cib-secret
+    file: ./.gitlab-ci/variables/ext-repository-read-token.cib-secret
