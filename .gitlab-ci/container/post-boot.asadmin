@@ -1,0 +1,5 @@
+# Create the connection pool reading credentials from environment variables
+create-jdbc-connection-pool --datasourceclassname org.postgresql.xa.PGXADataSource --restype javax.sql.XADataSource --property portNumber=${ENV=DB_PORT}:password=${ENV=DB_PASSWORD}:user=${ENV=DB_USER}:serverName=${ENV=DB_HOST}:databaseName=${ENV=DB_NAME} FirmaDigitalCP
+
+# Bind the pool to the JNDI name expected by your application
+create-jdbc-resource --connectionpoolid FirmaDigitalCP java/FirmaDigitalDS

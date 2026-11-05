@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_3_2.xsd"
+                 version="3.2">
+
+    <entity class="ec.gob.firmadigital.servicio.model.ApiUrl">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="apiurl_seq_gen"/>
+                <sequence-generator name="apiurl_seq_gen" sequence-name="apiurl_id_seq" allocation-size="1"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="ec.gob.firmadigital.servicio.model.Documento">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="documento_seq_gen"/>
+                <sequence-generator name="documento_seq_gen" sequence-name="documento_id_seq" allocation-size="1"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="ec.gob.firmadigital.servicio.model.Log">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="log_seq_gen"/>
+                <sequence-generator name="log_seq_gen" sequence-name="log_id_seq" allocation-size="1"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="ec.gob.firmadigital.servicio.model.Sistema">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="sistema_seq_gen"/>
+                <sequence-generator name="sistema_seq_gen" sequence-name="sistema_id_seq" allocation-size="1"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="ec.gob.firmadigital.servicio.model.SistemaMobile">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="sistema_mobile_seq_gen"/>
+                <sequence-generator name="sistema_mobile_seq_gen" sequence-name="sistemamobile_id_seq" allocation-size="1"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="ec.gob.firmadigital.servicio.model.Version">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="version_seq_gen"/>
+                <sequence-generator name="version_seq_gen" sequence-name="version_id_seq" allocation-size="1"/>
+            </id>
+        </attributes>
+    </entity>
+
+</entity-mappings>

@@ -11,7 +11,9 @@ variables:
   DOCKER_HOST: "tcp://docker:2375"
   DOCKER_TLS_CERTDIR: ""
   IMAGE_NAME: "$REGISTRY_DOMAIN/development/firmaec/firmadigital-servicio/firmadigital-servicio"
-
+  DOCKER_DRIVER: overlay2
+  GIT_SUBMODULE_STRATEGY: normal
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
 
 build_and_push:
   stage: build
@@ -20,14 +22,29 @@ build_and_push:
     - name: docker:29.6.0-dind
   tags:
     - shared
+  cache:
+    key:
+      files:
+        - firmadigital-servicio/pom.xml
+    paths:
+      - .m2/repository
+    policy: pull-push
   before_script:
-    - apk add --no-cache ca-certificates
+    - apk add --no-cache ca-certificates gettext
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - mkdir -p .m2/repository
   script:
     - cp "$INTERNAL_CA_CERT" ./.gitlab-ci/variables/main-domain.pem
     - cp "$OLD_INTERNAL_CA_CERT" ./.gitlab-ci/variables/old-main-domain.pem
-    - export EXT_REPOSITORY_READ_TOKEN="$EXT_REPOSITORY_READ_TOKEN"
-    - docker build --provenance=false --platform linux/amd64 --build-arg MAIN_DOMAIN_ARG=$MAIN_DOMAIN --secret id=ext-repository-read-token,env=EXT_REPOSITORY_READ_TOKEN -t "$IMAGE_NAME:$CI_COMMIT_TAG" .
+    - export MAVEN_USERNAME=$MAVEN_USERNAME
+    - export MAVEN_PASSWORD=$MAVEN_PASSWORD
+    - envsubst < .gitlab-ci/variables/settings.xml.template > .gitlab-ci/variables/settings.xml
+    - |
+      docker build --no-cache --provenance=false --platform linux/amd64 \
+      --build-arg MAVEN_REPO=.m2/repository \
+      --build-arg MAIN_DOMAIN_ARG=$MAIN_DOMAIN \
+      --secret id=maven-settings,src=./.gitlab-ci/variables/settings.xml \
+      -t "$IMAGE_NAME:$CI_COMMIT_TAG" .
     - docker push $IMAGE_NAME:$CI_COMMIT_TAG
 
 .ssh_deploy_template: &ssh_setup
@@ -60,11 +77,11 @@ deploy_to_test:
     - export IMAGE_NAME=$IMAGE_NAME
     - export IMAGE_TAG=$CI_COMMIT_TAG
 
-    - export WILDFLY_USER=$WILDFLY_USER
-    - export WILDFLY_PASS=$WILDFLY_PASS
     - export DB_USER=$DB_USER
     - export DB_PASSWORD=$DB_PASSWORD
-    - export DB_CONNECTION_URL=$DB_CONNECTION_URL
+    - export DB_HOST=$DB_HOST
+    - export DB_PORT=$DB_PORT
+    - export DB_NAME=$DB_NAME
 
     # Now envsubst will replace ${VARIABLE} with exported values
     - envsubst < .gitlab-ci/templates/firmadigital-servicio.container.template > firmadigital-servicio.container.tmp
@@ -102,11 +119,11 @@ deploy_to_prod:
     - export IMAGE_NAME=$IMAGE_NAME
     - export IMAGE_TAG=$CI_COMMIT_TAG
 
-    - export WILDFLY_USER=$WILDFLY_USER
-    - export WILDFLY_PASS=$WILDFLY_PASS
     - export DB_USER=$DB_USER
     - export DB_PASSWORD=$DB_PASSWORD
-    - export DB_CONNECTION_URL=$DB_CONNECTION_URL
+    - export DB_HOST=$DB_HOST
+    - export DB_PORT=$DB_PORT
+    - export DB_NAME=$DB_NAME
 
     # Now envsubst will replace ${VARIABLE} with exported values
     - envsubst < .gitlab-ci/templates/firmadigital-servicio.container.template > firmadigital-servicio.container.tmp

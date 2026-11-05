@@ -1,5 +1,0 @@
-module add --name=org.postgresql --resources=/opt/jboss/postgresql-42.2.2.jar --dependencies=javax.api,javax.transaction.api
-
-/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=org.postgresql,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)
-
-data-source add --name=FirmaDigitalDS --jndi-name=java:/FirmaDigitalDS --driver-name=postgresql --connection-url="${env.DB_CONNECTION_URL:jdbc:postgresql://firmadigital-db:5432/firmadigital}" --user-name="${env.DB_USER:firmadigital}" --password="${env.DB_PASSWORD:firmadigital}" --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter

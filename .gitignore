@@ -1,7 +1,16 @@
 .env
-*.cib-secret
 
-# domain dependant args
-main-domain.cib-arg
+# container secrets
+*.cib-secret
+.gitlab-ci/variables/settings.xml
+
+# ca certificates
 main-domain.pem
 old-main-domain.pem
+
+# dev
+.dev/*
+!.dev/.gitkeep
+!.dev/.m2-repository/
+.dev/.m2-repository/*
+!.dev/.m2-repository/.gitkeep

@@ -1,0 +1,3 @@
+[submodule "firmadigital-servicio"]
+	path = firmadigital-servicio
+	url = ../../../development-ext/firmaec/firmadigital-servicio

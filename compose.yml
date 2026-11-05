@@ -6,17 +6,18 @@ services:
       context: .
       args:
         MAIN_DOMAIN_ARG: ${MAIN_DOMAIN_ARG}
+        MAVEN_REPO: ${MAVEN_REPO}
       secrets:
-        - ext-repository-read-token
+        - maven-settings
     container_name: firmadigital-servicio
+    image: firmadigital-servicio:local
     restart: unless-stopped
     ports:
       - "8080:8080"    # HTTP port
-      - "9990:9990"    # Management console port
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      test: ["CMD-SHELL", "java /opt/payara/HealthCheck.java || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -26,5 +27,5 @@ volumes:
   sql_data:
 
 secrets:
-  ext-repository-read-token:
-    file: ./.gitlab-ci/variables/ext-repository-read-token.cib-secret
+  maven-settings:
+    file: ./.gitlab-ci/variables/settings.xml
